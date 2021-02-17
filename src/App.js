@@ -1,5 +1,5 @@
-import React, { Suspense, useRef, useState, useEffect } from "react"
-import { Canvas, useFrame } from "react-three-fiber"
+import React, { Suspense, useRef, useState, useEffect, } from "react"
+import { Canvas, useFrame, useThree } from "react-three-fiber"
 import { ContactShadows, Environment, useGLTF, OrbitControls, useAnimations } from "drei"
 import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
@@ -31,13 +31,19 @@ function Shoe() {
 
 function Model() {
   const group = useRef()
-  const { nodes, materials, animations } = useGLTF("jules_with_texture.glb")
+  const { nodes, materials, animations } = useGLTF("jule.glb")
   const { actions } = useAnimations(animations, group)
+  console.log(actions);
+  useFrame(() => {
+    group.current.rotation.y += 0.001;
+  })
   useEffect(() => {
     actions.Idle.play();
+    actions.Idle_Wrench.play();
+
   })
   return (
-    <group ref={group} dispose={null} scale={[0.02, 0.02, 0.02]} position={[0, -1, 0]}>
+    <group ref={group} dispose={null} scale={[0.02, 0.02, 0.02]} position={[0, -1.6, 0]}>
       <group name="F_MED_Mechanical_Engineerao">
         <primitive object={nodes.pelvis} />
         <skinnedMesh
@@ -67,6 +73,7 @@ function Model() {
     </group>
   )
 }
+
 
 
 function Car(props) {
@@ -527,28 +534,26 @@ function Car(props) {
 
 export default function App() {
   return (
-    <>
-    <Canvas 
-        concurrent 
-        
-        pixelRatio={[1, 2]} 
-        camera={{  position: [0, 0, 4],  }}
-        style={{
-          background: "#0376FF",
-        }}
+    <> 
+    <Canvas        
+        pixelRatio={window.devicePixelRatio}
+        className="container"
+        concurrent
+        camera={{ position: [0, 0, 2.5], }}
         >
       <ambientLight intensity={0.3} />
+      <pointLight position={[20, 20, 20]} />
         <spotLight intensity={0.3} angle={0.1} penumbra={1} position={[5, 25, 20]} />
         <Suspense fallback={null}>
              {/* <Shoe /> */}
             <Model/>
-           <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={25} height={10} blur={1} far={1} />
+          
+           {/* <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} /> */}
         </Suspense>
         <OrbitControls minPolarAngle={Math.PI / 2} maxPolarAngle={Math.PI / 2} enableZoom={true} enablePan={false} />
-        FORTNITE
-
       </Canvas>
 
-      </>
+          <img src="./fortnite_logo.png" className="title" width="400" />
+    </>
   )
 }
