@@ -1,8 +1,9 @@
 import React, { Suspense, useRef, useState, useEffect, } from "react"
 import { Canvas, useFrame, useThree } from "react-three-fiber"
-import { ContactShadows, Environment, useGLTF, OrbitControls, useAnimations } from "drei"
+import { ContactShadows, Environment, useGLTF, OrbitControls, useAnimations, Shadow, Cylinder, Box, Plane, Sphere, Tube } from "drei"
 import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
+import * as THREE from "three"
 // Using a Valtio state model to bridge reactivity between
 // the canvas and the dom, both can write to it and/or react to it.
 
@@ -530,30 +531,115 @@ function Car(props) {
   )
 }
 
+// const Scene = () => {
+//   const boxRef = useRef();
+//   // useFrame(() => {
+//   //   boxRef.current.rotation.y += 0.004;
+//   //   boxRef.current.rotation.x += 0.004;
+//   //   boxRef.current.rotation.z += 0.004;
+//   // });
+//   // Set receiveShadow on any mesh that should be in shadow,
+//   // and castShadow on any mesh that should create a shadow.
+//   return (
+//     <group>
+//       <tubeGeometry 
+ 
+//           castShadow 
+//           receiveShadow 
+//           // ref={boxRef} 
+//           // args={[
+//           //   1,      // top radius
+//           //   1,      // bottom radius
+//           //   1,      // height
+//           //   16,     // radial segment
+//           //   5,      // height segment
+//           //   false,  // open end?                       
+//           // ]}
+//       >
+//         <meshStandardMaterial attach="material" color="lime" />
+//       <tubeGeometry/>
+//     </group>
+//   );
+// };
+
 
 
 export default function App() {
+
+  const [curve] = useState(() => {
+    // Create an empty array to stores the points
+    let points = []
+    // Define points along Z axis
+    for (let i = 0; i < 50; i += 1)
+      points.push(new THREE.Vector3(1 - Math.random() * 2, 1 - Math.random() * 2, 10 * (i / 4)))
+      // points.push(new THREE.Vector3(1, 1, 1))
+    return new THREE.CatmullRomCurve3(points)
+  })
+
   return (
-    <> 
-    <Canvas        
+    
+    // <> 
+    // <Canvas        
+    //     pixelRatio={window.devicePixelRatio}
+    //     className="container"
+    //     concurrent
+    //     camera={{ position: [0, 0, 2.5], }}
+    //     >
+    //   <ambientLight intensity={0.3} />
+    //   <pointLight position={[20, 20, 20]} />
+    //     <spotLight intensity={0.3} angle={0.1} penumbra={1} position={[5, 25, 20]} />
+    //     <Suspense fallback={null}>
+    //          {/* <Shoe /> */}
+    //         <Model/>
+          
+    //        {/* <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} /> */}
+    //     </Suspense>
+    //     <OrbitControls minPolarAngle={Math.PI / 2} maxPolarAngle={Math.PI / 2} enableZoom={true} enablePan={false} />
+    //   </Canvas>
+
+    //       <img src="./fortnite_logo.png" className="title" width="400" />
+    // </>
+    <>
+      <Canvas        
         pixelRatio={window.devicePixelRatio}
         className="container"
         concurrent
-        camera={{ position: [0, 0, 2.5], }}
+        shadowMap
+        camera={{ position: [0, 0, 5], }}
         >
-      <ambientLight intensity={0.3} />
-      <pointLight position={[20, 20, 20]} />
-        <spotLight intensity={0.3} angle={0.1} penumbra={1} position={[5, 25, 20]} />
-        <Suspense fallback={null}>
-             {/* <Shoe /> */}
-            <Model/>
-          
-           {/* <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} /> */}
-        </Suspense>
-        <OrbitControls minPolarAngle={Math.PI / 2} maxPolarAngle={Math.PI / 2} enableZoom={true} enablePan={false} />
-      </Canvas>
+         <Suspense fallback={null}>
+      <directionalLight
+        intensity={0.5}
+        castShadow
+        shadow-mapSize-height={512}
+        shadow-mapSize-width={512}
+      />
+               <ambientLight intensity={0.1} />
+              <directionalLight
+                intensity={0.5}
+                castShadow
+                shadow-mapSize-height={512}
+                shadow-mapSize-width={512}
+              />
+           
+           {/* <Cylinder/> */}
+           <mesh>
+                  <tubeGeometry args={[curve, 2, 10, 50, true]}/>
+                  <meshStandardMaterial attach="material" color="green" /> 
+           </mesh>
 
-          <img src="./fortnite_logo.png" className="title" width="400" />
+        
+            {/* <Plane
+              receiveShadow
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[0, -1, 0]}
+              args={[1000, 1000]}
+            >
+              <meshStandardMaterial attach="material" color="pink" />
+            </Plane> */}
+         <OrbitControls />
+      </Suspense>
+    </Canvas>
     </>
   )
 }
