@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useState, useEffect, } from "react"
-import { Canvas, useFrame, useThree } from "react-three-fiber"
-import { ContactShadows, Environment, useGLTF, OrbitControls, useAnimations, Shadow, Cylinder, Box, Plane, Sphere, Tube } from "drei"
+import { Canvas, useFrame,  } from "react-three-fiber"
+import { ContactShadows,  useGLTF, OrbitControls, useAnimations, } from "drei"
 import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
 import * as THREE from "three"
@@ -75,492 +75,131 @@ function Model() {
   )
 }
 
-
-
-function Car(props) {
+function Pipe(props) {
   const group = useRef()
-  const { nodes, materials } = useGLTF('alfa_romeo.glb')
+  const snap = useProxy(state);
+  const { nodes, materials } = useGLTF('pipes_within_pipe.glb');
+  const [hover, set] = useState(null)
+  const [hovered, setHover] = useState(false)
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={group} {...props} dispose={null}
+      // onPointerOver   = {(e) => (e.stopPropagation(), set(e.object.name))}
+      onPointerOver = {(e) => {
+        e.stopPropagation(); 
+        if(e.object.name.includes("sub")){
+          state.items[e.object.name] = "#00FD68";  
+        }else {
+          state.items[e.object.name] = "#F4FF02";  
+        }
+        set(e.object.name);
+      }}
+      onPointerOut    = {(e) => {e.intersections.length=== 0 && set(null); state.items[e.object.name] = "#999999";}}
+      onPointerDown   = {(e) => {e.stopPropagation(); state.current = e.object.name;}}
+      onPointerMissed = {(e) => {state.current = null}}
+      // onClick={(event) => setActive(!active)}
+      // onPointerOver={(event) => setHover(true)}
+      // onPointerOut={(event) => setHover(false)}
+    >
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <group rotation={[Math.PI / 2, 0, 0]}>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn6}
-              geometry={nodes.forMayaAOpolySurface29_forMayaAOblinn6_0.geometry}
-            />
-            <mesh
-              material={materials.forMayaAOblinn7}
-              geometry={nodes.forMayaAOpolySurface29_forMayaAOblinn7_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOmi_car_paint_phen2}
-              geometry={nodes.forMayaAOpolySurface45_forMayaAOmi_car_paint_phen2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOmi_car_paint_phen2}
-              geometry={nodes.forMayaAOpolySurface317_forMayaAOmi_car_paint_phen2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOmi_car_paint_phen2}
-              geometry={nodes.forMayaAOpolySurface318_forMayaAOmi_car_paint_phen2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOmi_car_paint_phen2}
-              geometry={nodes.forMayaAOpolySurface274_forMayaAOmi_car_paint_phen2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOReshotka_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.forMayaAOAlpha} geometry={nodes.forMayaAOznachok_forMayaAOAlpha_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn6}
-              geometry={nodes.forMayaAOpolySurface133_forMayaAOblinn6_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOphong5}
-              geometry={nodes.forMayaAOpolySurface197_forMayaAOphong5_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpPipe6_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert16}
-              geometry={nodes.forMayaAOpCube4_forMayaAOlambert16_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpCube1_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn11}
-              geometry={nodes.forMayaAOpolySurface148_forMayaAOblinn11_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn11}
-              geometry={nodes.forMayaAOpolySurface149_forMayaAOblinn11_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn11}
-              geometry={nodes.forMayaAOpolySurface150_forMayaAOblinn11_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn11}
-              geometry={nodes.forMayaAOpolySurface151_forMayaAOblinn11_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpolySurface168_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOmi_car_paint_phen2}
-              geometry={nodes.forMayaAOpolySurface166_forMayaAOmi_car_paint_phen2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpolySurface171_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOphong5}
-              geometry={nodes.forMayaAOpolySurface181_forMayaAOphong5_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOmi_car_paint_phen2}
-              geometry={nodes.forMayaAOpolySurface191_forMayaAOmi_car_paint_phen2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOphong5}
-              geometry={nodes.forMayaAOpCylinder7_forMayaAOphong5_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.forMayaAOnumber} geometry={nodes.forMayaAOnomer_forMayaAOnumber_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpolySurface200_Chrome_0.geometry} />
-            <mesh
-              material={materials.forMayaAOGrill2}
-              geometry={nodes.forMayaAOpolySurface200_forMayaAOGrill2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.forMayaAOblinn6} geometry={nodes.forMayaAOpSphere3_forMayaAOblinn6_0.geometry} />
-            <mesh
-              material={materials.forMayaAOblinn10}
-              geometry={nodes.forMayaAOpSphere3_forMayaAOblinn10_0.geometry}
-            />
-          </group>
-          <group position={[0, 0, 0]} scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.logo222} geometry={nodes.forMayaAOznachok1_logo222_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert16}
-              geometry={nodes.forMayaAOpCube5_forMayaAOlambert16_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpCube6_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert13}
-              geometry={nodes.forMayaAOpCylinder1_forMayaAOlambert13_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpPipe5_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert16}
-              geometry={nodes.forMayaAOpCube9_forMayaAOlambert16_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert13}
-              geometry={nodes.forMayaAOpCylinder8_forMayaAOlambert13_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpolySurface292_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome_2} geometry={nodes.forMayaAOpolySurface83_Chrome_2_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOfrontLights}
-              geometry={nodes.forMayaAOfaraz2_forMayaAOfrontLights_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOrear_lights}
-              geometry={nodes.forMayaAOfaraz1_forMayaAOrear_lights_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn6}
-              geometry={nodes.forMayaAOpolySurface309_forMayaAOblinn6_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpolySurface295_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOmi_car_paint_phen2}
-              geometry={nodes.forMayaAOpolySurface297_forMayaAOmi_car_paint_phen2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpCylinder10_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOfrontLights}
-              geometry={nodes.forMayaAOpSphere2_forMayaAOfrontLights_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpTorus1_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpolySurface310_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpCube12_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpCube15_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpCube11_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpCube13_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpolySurface316_Chrome_0.geometry} />
-            <mesh
-              material={materials.forMayaAOphong5}
-              geometry={nodes.forMayaAOpolySurface316_forMayaAOphong5_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpSphere7_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn9}
-              geometry={nodes.forMayaAOpolySurface266_forMayaAOblinn9_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpolySurface221_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOtruba_Chrome_0.geometry} />
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOtruba_forMayaAOlambert15_0.geometry}
-            />
-            <mesh
-              material={materials.forMayaAOmi_car_paint_phen2}
-              geometry={nodes.forMayaAOtruba_forMayaAOmi_car_paint_phen2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.mafina2hdrilambert9}
-              geometry={nodes.polySurface318_mafina2hdrilambert9_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.forMayaAOphong5} geometry={nodes.polySurface319_forMayaAOphong5_0.geometry} />
-            <mesh material={materials.Chrome} geometry={nodes.polySurface319_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOphong2}
-              geometry={nodes.forMayaAOpolySurface320_forMayaAOphong2_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert17}
-              geometry={nodes.forMayaAOpolySurface322_forMayaAOlambert17_0.geometry}
-            />
-            <mesh
-              material={materials.forMayaAOlambert16}
-              geometry={nodes.forMayaAOpolySurface322_forMayaAOlambert16_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpolySurface324_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert16}
-              geometry={nodes.polySurface320_forMayaAOlambert16_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert16}
-              geometry={nodes.forMayaAOpolySurface326_forMayaAOlambert16_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert17}
-              geometry={nodes.forMayaAOpolySurface327_forMayaAOlambert17_0.geometry}
-            />
-            <mesh material={materials.Chrome} geometry={nodes.forMayaAOpolySurface327_Chrome_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOblinn6}
-              geometry={nodes.forMayaAOpCylinder11_forMayaAOblinn6_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.forMayaAOblinn6} geometry={nodes.polySurface322_forMayaAOblinn6_0.geometry} />
-            <mesh material={materials.forMayaAOblinn9} geometry={nodes.polySurface322_forMayaAOblinn9_0.geometry} />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.forMayaAOblinn9} geometry={nodes.polySurface5_forMayaAOblinn9_0.geometry} />
-            <mesh material={materials.forMayaAOblinn6} geometry={nodes.polySurface5_forMayaAOblinn6_0.geometry} />
-            <mesh material={materials.forMayaAOlambert16} geometry={nodes.polySurface5_forMayaAOlambert16_0.geometry} />
-            <mesh material={materials.Chrome} geometry={nodes.polySurface5_Chrome_0.geometry} />
-            <mesh material={materials.forMayaAOblinn7} geometry={nodes.polySurface5_forMayaAOblinn7_0.geometry} />
-          </group>
-          <group position={[-0.04, 0.09, 0.12]} rotation={[Math.PI / 2, 0, 0]} scale={[0, 0, 0]}>
-            <group position={[-1, 0, 11]}>
-              <mesh material={materials.Chrome_2} geometry={nodes.pTorus1_Chrome_2_0.geometry} />
-            </group>
-            <group position={[-1, 0.67, 11]} scale={[1.01, 0.9, 0.9]}>
-              <mesh material={materials.lamp1} geometry={nodes.pCube1_lamp1_0.geometry} />
-            </group>
-            <group position={[27.08, 0, 11]}>
-              <mesh material={materials.Chrome_2} geometry={nodes.pTorus2_Chrome_2_0.geometry} />
-            </group>
-            <group position={[27.08, 0.67, 11]} scale={[1.01, 0.9, 0.9]}>
-              <mesh material={materials.lamp1} geometry={nodes.pCube2_lamp1_0.geometry} />
-            </group>
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh
-              material={materials.forMayaAOlambert15}
-              geometry={nodes.forMayaAOpCylinder12_forMayaAOlambert15_0.geometry}
-            />
-          </group>
-          <group scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.VRayMtl1} geometry={nodes.polySurface326_VRayMtl1_0.geometry} />
-            <mesh material={materials.VRayMtl1} geometry={nodes.polySurface327_VRayMtl1_0.geometry} />
-          </group>
-          <group position={[0, 0.05, -0.05]} rotation={[-0.26, 0, 0]} scale={[0.1, 0.1, 0.1]}>
-            <mesh material={materials.logo222} geometry={nodes.polySurface347_logo222_0.geometry} />
-            <mesh material={materials.Chrome_2} geometry={nodes.polySurface347_Chrome_2_0.geometry} />
-          </group>
-          <group position={[0.02, 0.08, 0.03]} rotation={[1.78, 1.55, Math.PI]} scale={[0, 0, 0]}>
-            <mesh material={materials.forMayaAOphong5} geometry={nodes.pSphere2_forMayaAOphong5_0.geometry} />
-          </group>
-          <group position={[0.02, 0.08, 0.03]} rotation={[1.78, 1.55, Math.PI]} scale={[0, 0, 0]}>
-            <mesh material={materials.forMayaAOphong5} geometry={nodes.pSphere3_forMayaAOphong5_0.geometry} />
-          </group>
-          <group position={[0.03, 0.07, 0.03]} rotation={[1.78, 0.56, Math.PI]} scale={[0, 0, 0]}>
-            <mesh material={materials.forMayaAOphong5} geometry={nodes.pSphere4_forMayaAOphong5_0.geometry} />
-          </group>
-          <group position={[0.03, 0.06, 0.02]} rotation={[1.78, -0.48, Math.PI]} scale={[0, 0, 0]}>
-            <mesh material={materials.forMayaAOphong5} geometry={nodes.pSphere5_forMayaAOphong5_0.geometry} />
-          </group>
-          <group position={[0.04, 0.07, 0.03]} rotation={[1.78, 0.49, Math.PI]} scale={[0, 0, 0]}>
-            <mesh material={materials.forMayaAOphong5} geometry={nodes.pSphere6_forMayaAOphong5_0.geometry} />
-          </group>
-          <group position={[0.04, 0.06, 0.02]} rotation={[1.78, -0.53, Math.PI]} scale={[0, 0, 0]}>
-            <mesh material={materials.forMayaAOphong5} geometry={nodes.pSphere7_forMayaAOphong5_0.geometry} />
-          </group>
-          <group position={[-0.03, 0.08, -0.03]} rotation={[-0.08, -0.27, -0.02]} scale={[0, 0, 0]}>
-            <mesh material={materials.miror} geometry={nodes.pCube4_miror_0.geometry} />
-            <mesh material={materials.Chrome_2} geometry={nodes.pCube4_Chrome_2_0.geometry} />
-          </group>
-          <group position={[-0.31, 0.12, -0.03]} rotation={[Math.PI / 2, -0.2, 0.27]} scale={[0.1, 0.1, 0.1]}>
-            <group position={[30.67, 0.51, -0.62]} rotation={[0.46, 0.25, 0]} scale={[0.16, 0.16, 0.16]}>
-              <group rotation={[0, 0, 0]}>
-                <mesh material={materials.chromedvorn} geometry={nodes.polySurface351_chromedvorn_0.geometry} />
-              </group>
-              <group rotation={[0, 0, 0]}>
-                <mesh material={materials.chromedvorn} geometry={nodes.polySurface352_chromedvorn_0.geometry} />
-              </group>
-              <group rotation={[0, 0, 0]}>
-                <mesh material={materials.chromedvorn} geometry={nodes.polySurface353_chromedvorn_0.geometry} />
-              </group>
-              <group rotation={[0, 0, 0]}>
-                <mesh material={materials.rezinDvorn} geometry={nodes.polySurface354_rezinDvorn_0.geometry} />
-              </group>
-              <group rotation={[0, 0, 0]}>
-                <mesh material={materials.chromedvorn} geometry={nodes.polySurface355_chromedvorn_0.geometry} />
-              </group>
-            </group>
-            <group position={[0.33, 5.83, -0.37]} rotation={[0.09, -0.02, -0.15]}>
-              <group position={[36.37, 2.64, -3.8]} rotation={[0, 0, -Math.PI / 2]} scale={[0.08, 0.11, 0.11]}>
-                <mesh material={materials.Chrome_2} geometry={nodes.polySurface349_Chrome_2_0.geometry} />
-              </group>
-              <group position={[38.29, 0.53, -2.19]} rotation={[0, 0, -Math.PI / 2]} scale={[0.41, 5.55, 0.41]}>
-                <mesh material={materials.chromedvorn} geometry={nodes.pCylinder4_chromedvorn_0.geometry} />
-              </group>
-              <group position={[0.14, 0, 1.9]} rotation={[0, 0.05, 0]}>
-                <group
-                  position={[40.24, 0.53, -2.19]}
-                  rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
-                  scale={[0.94, 0.94, 0.94]}>
-                  <mesh material={materials.Chrome_2} geometry={nodes.pCylinder1_Chrome_2_0.geometry} />
-                </group>
-                <group position={[40.84, 0.53, -1.95]} rotation={[-Math.PI / 2, 0, 0]} scale={[0.41, 0.5, 0.41]}>
-                  <mesh material={materials.chromedvorn} geometry={nodes.pCylinder2_chromedvorn_0.geometry} />
-                </group>
-                <group position={[40.84, 0.53, -1.93]} rotation={[-Math.PI / 2, 0, 0]} scale={[0.46, 0.56, 0.46]}>
-                  <mesh material={materials.rezinDvorn} geometry={nodes.pCylinder3_rezinDvorn_0.geometry} />
-                </group>
-              </group>
-            </group>
-          </group>
+          {/* main pipe screws */}
+  
+
+
+          {/* Big Pipe */}
+          <mesh 
+            material-color={snap.items.big_pipe}
+            // material={materials.DefaultMaterial} 
+            name="big_pipe"
+            geometry={nodes.defaultMaterial002.geometry} 
+          >
+                  <meshToonMaterial  color={'#999999'} />
+          </mesh>
+          <mesh
+            material-color={snap.items.first_sub_pipe}
+            // material={materials.DefaultMaterial}
+            // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('red')})}
+            geometry={nodes.defaultMaterial004.geometry}
+            position={[-0.05, 0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="first_sub_pipe"
+          >
+                <meshToonMaterial color={'#999999'} />
+
+          </mesh>
+          <mesh
+            material-color={snap.items.fourth_sub_pipe}
+            // material={materials.DefaultMaterial}
+            // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('blue')})}
+            geometry={nodes.defaultMaterial006.geometry}
+            position={[0.05, -0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="fourth_sub_pipe"
+          >
+                <meshToonMaterial color={'#999999'} />
+
+          </mesh>
+          <mesh
+            material-color={snap.items.second_sub_pipe}
+            // material={materials.DefaultMaterial}
+            // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('yellow')})}
+            geometry={nodes.defaultMaterial008.geometry}
+            position={[0.05, 0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="second_sub_pipe"
+
+          >
+               <meshToonMaterial color={'#999999'} />
+          </mesh>
+          <mesh
+            material-color={snap.items.third_sub_pipe}
+            // material={materials.DefaultMaterial}
+            // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('green')})}
+            geometry={nodes.defaultMaterial010.geometry}
+            position={[-0.05, -0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="third_sub_pipe"
+
+          >
+                  <meshToonMaterial color={'#999999'} />
+          </mesh>
         </group>
       </group>
     </group>
   )
 }
 
-// const Scene = () => {
-//   const boxRef = useRef();
-//   // useFrame(() => {
-//   //   boxRef.current.rotation.y += 0.004;
-//   //   boxRef.current.rotation.x += 0.004;
-//   //   boxRef.current.rotation.z += 0.004;
-//   // });
-//   // Set receiveShadow on any mesh that should be in shadow,
-//   // and castShadow on any mesh that should create a shadow.
-//   return (
-//     <group>
-//       <tubeGeometry 
- 
-//           castShadow 
-//           receiveShadow 
-//           // ref={boxRef} 
-//           // args={[
-//           //   1,      // top radius
-//           //   1,      // bottom radius
-//           //   1,      // height
-//           //   16,     // radial segment
-//           //   5,      // height segment
-//           //   false,  // open end?                       
-//           // ]}
-//       >
-//         <meshStandardMaterial attach="material" color="lime" />
-//       <tubeGeometry/>
-//     </group>
-//   );
-// };
+function Picker(){
+    const snap = useProxy(state);
+    return (
+      <div className="picker" style={{display: snap.current ? "block" : "none"}}>
+            {/* <HexColorPicker
+              color={snap.items[snap.current]}
+              onChange={(color) => (state.items[snap.current] = color)}
+            /> */}
+            <h1>{snap.current}</h1>
+      </div>
+    )
+}
+
+
+
+const state = proxy({
+  current: null,
+  items: {
+    mat_01: "#999999",
+    main_front_screw: "#999999",
+    first_sub_screw: "#999999",
+    fourth_sub_screw: "#999999",
+    second_sub_screw: "#999999",
+    third_sub_screw: "#999999",
+    big_pipe: "#999999",
+    first_sub_pipe: "#999999",
+    fourth_sub_pipe: "#999999",
+    second_sub_pipe: "#999999",
+    third_sub_pipe: "#999999",
+  }
+})
 
 
 
@@ -578,6 +217,30 @@ export default function App() {
 
   return (
     
+    <>  
+        <Canvas        
+        pixelRatio={window.devicePixelRatio}
+         className="container"
+         concurrent
+         camera={{ position: [0, 0, 1.25], }}
+         >
+        <ambientLight intensity={0.3} />
+        <pointLight position={[20, 20, 20]} />
+          <spotLight intensity={0.3} angle={0.1} penumbra={1} position={[5, 25, 20]} />
+          <Suspense fallback={null}>
+                <Pipe/>
+            <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} />
+         </Suspense>
+         <OrbitControls minPolarAngle={Math.PI / 2} maxPolarAngle={Math.PI / 2} enableZoom={true} enablePan={false} />
+       </Canvas>
+       <Picker/>
+    </>
+  
+  )
+}
+
+
+
     // <> 
     // <Canvas        
     //     pixelRatio={window.devicePixelRatio}
@@ -599,47 +262,96 @@ export default function App() {
 
     //       <img src="./fortnite_logo.png" className="title" width="400" />
     // </>
-    <>
-      <Canvas        
-        pixelRatio={window.devicePixelRatio}
-        className="container"
-        concurrent
-        shadowMap
-        camera={{ position: [0, 0, 5], }}
-        >
-         <Suspense fallback={null}>
-      <directionalLight
-        intensity={0.5}
-        castShadow
-        shadow-mapSize-height={512}
-        shadow-mapSize-width={512}
-      />
-               <ambientLight intensity={0.1} />
-              <directionalLight
-                intensity={0.5}
-                castShadow
-                shadow-mapSize-height={512}
-                shadow-mapSize-width={512}
-              />
-           
-           {/* <Cylinder/> */}
-           <mesh>
-                  <tubeGeometry args={[curve, 2, 10, 50, true]}/>
-                  <meshStandardMaterial attach="material" color="green" /> 
-           </mesh>
 
-        
-            {/* <Plane
-              receiveShadow
-              rotation={[-Math.PI / 2, 0, 0]}
-              position={[0, -1, 0]}
-              args={[1000, 1000]}
-            >
-              <meshStandardMaterial attach="material" color="pink" />
-            </Plane> */}
-         <OrbitControls />
-      </Suspense>
-    </Canvas>
-    </>
-  )
-}
+//  <>
+// <Canvas        
+//   pixelRatio={window.devicePixelRatio}
+//   className="container"
+//   concurrent
+//   shadowMap
+//   camera={{ position: [0, 0, 5], }}
+//   >
+//    <Suspense fallback={null}>
+// <directionalLight
+//   intensity={0.5}
+//   castShadow
+//   shadow-mapSize-height={512}
+//   shadow-mapSize-width={512}
+// />
+//          <ambientLight intensity={0.1} />
+//         <directionalLight
+//           intensity={0.5}
+//           castShadow
+//           shadow-mapSize-height={512}
+//           shadow-mapSize-width={512}
+//         />
+     
+//      {/* <Cylinder/> */}
+//      <mesh>
+//             <tubeGeometry args={[curve, 2, 10, 50, true]}/>
+//             <meshStandardMaterial attach="material" color="green" /> 
+//      </mesh>
+     
+//    <OrbitControls />
+// </Suspense>
+// </Canvas>
+// </> 
+
+
+        {/* <mesh 
+            material-color={snap.items.main_second_screw}
+            // material={materials.DefaultMaterial} 
+            material={new THREE.MeshBasicMaterial({ color: new THREE.Color('#B6B6B6')})} 
+            geometry={nodes.defaultMaterial001.geometry} 
+          />
+          <mesh 
+            material-color={snap.items.main_front_screw}
+            // material={materials.DefaultMaterial}
+            material={new THREE.MeshBasicMaterial({ color: new THREE.Color('#B6B6B6')})} 
+            geometry={nodes.defaultMaterial.geometry} 
+            name="main front screw"
+
+          /> */}
+
+
+          {/* sub pipe screws */}
+          {/* <mesh
+            material-color={snap.items.first_sub_screw}
+            // material={materials.DefaultMaterial}
+            material={new THREE.MeshBasicMaterial({ color: new THREE.Color('#B6B6B6')})}
+            geometry={nodes.defaultMaterial003.geometry}
+            position={[-0.05, 0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="first sub screw"
+
+          />
+          <mesh
+            material-color={snap.items.fourth_sub_screw}
+            // material={materials.DefaultMaterial}
+            material={new THREE.MeshBasicMaterial({ color: new THREE.Color('#B6B6B6')})}
+            geometry={nodes.defaultMaterial005.geometry}
+            position={[0.05, -0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="fourth sub screw"
+
+          />
+          <mesh
+            material-color={snap.items.second_sub_screw}
+            // material={materials.DefaultMaterial}
+            material={new THREE.MeshBasicMaterial({ color: new THREE.Color('#B6B6B6')})}
+            geometry={nodes.defaultMaterial007.geometry}
+            position={[0.05, 0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="second sub screw"
+
+          />
+          <mesh
+            material-color={snap.items.third_sub_screw}
+            // material={materials.DefaultMaterial}
+            material={new THREE.MeshBasicMaterial({ color: new THREE.Color('#B6B6B6')})}
+
+            geometry={nodes.defaultMaterial009.geometry}
+            position={[-0.05, -0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="main pipe"
+          /> */}
