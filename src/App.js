@@ -109,12 +109,18 @@ function Pipe(props) {
       // onPointerOver   = {(e) => (e.stopPropagation(), set(e.object.name))}
       onPointerOver = {(e) => {
         e.stopPropagation(); 
-        if(e.object.name.includes("sub")){state.items[e.object.name] = "#F6653E";}
-        else {state.items[e.object.name] = "#F4FF02";}
+        if(e.object.name.includes("sub")){
+          state.current = e.object.name;
+          state.items[e.object.name] = "#F6653E";
+        }
+        else {
+          state.current = e.object.name;
+          state.items[e.object.name] = "#F4FF02";
+        }
         set(e.object.name);        
       }}
       onPointerOut    = {(e) => {e.intersections.length=== 0 && set(null); state.items[e.object.name] = "#999999";}}
-      onPointerDown   = {(e) => {e.stopPropagation(); state.current = e.object.name;}}
+      // onPointerDown   = {(e) => {e.stopPropagation(); state.current = e.object.name;}}
       onPointerMissed = {(e) => {state.current = null}}
        
       // onUpdate={(e) => { state_2.items = e.children;}}
@@ -179,7 +185,6 @@ function Pipe(props) {
             
           >
                 <meshToonMaterial color={'#999999'} />
-
           </mesh>
 
        
@@ -205,9 +210,6 @@ function Picker(){
             <h2>{snap.current == "sub_pipe_02" ? "Fiber Line: "+snap.sub_items.sub_pipe_02: null} </h2>
             <h2>{snap.current == "sub_pipe_03" ? "Fiber Line: "+snap.sub_items.sub_pipe_03: null} </h2>
             <h2>{snap.current == "sub_pipe_04" ? "Fiber Line: "+snap.sub_items.sub_pipe_04: null} </h2>
-
-
-
       </div>
     )
 }
