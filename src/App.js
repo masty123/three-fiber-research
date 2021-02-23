@@ -1,9 +1,10 @@
 import React, { Suspense, useRef, useState, useEffect, } from "react"
-import { Canvas, useFrame,  } from "react-three-fiber"
-import { ContactShadows,  useGLTF, OrbitControls, useAnimations, } from "drei"
+import { Canvas, useFrame, useThree,  } from "react-three-fiber"
+import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, OrthographicCamera } from "drei"
 import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
 import * as THREE from "three"
+import { Vector3 } from "three"
 // Using a Valtio state model to bridge reactivity between
 // the canvas and the dom, both can write to it and/or react to it.
 
@@ -76,96 +77,120 @@ function Model() {
 }
 
 function Pipe(props) {
-  const group = useRef()
+  // ---------------- Camera Section ------------ //
+  const camRef = useRef()
+  const { setDefaultCamera } = useThree()
+  // Make the camera known to the system
+  useEffect(() => void setDefaultCamera(camRef.current), [])
+  // Update it every frame
+  useFrame(() => camRef.current.updateMatrixWorld())
+  // ------------------------------------------- //
+
+
+  const group = useRef();
   const snap = useProxy(state);
+  // const snap = useProxy(state_2);
   const { nodes, materials } = useGLTF('pipes_within_pipe.glb');
   const [hover, set] = useState(null)
   const [hovered, setHover] = useState(false)
+
+  // function getDataFromMesh(){
+  //   for (let i = 0; i < group.current)
+  // }
+
+
   return (
-    <group ref={group} {...props} dispose={null}
+    <>
+    <perspectiveCamera ref={camRef} position={[0,0,2]}   />
+    {/* {console.log( group.current ? group.current.children : null)} */}
+
+
+    <group ref={group} {...props} dispose={null} position={[0,0,0]}
       // onPointerOver   = {(e) => (e.stopPropagation(), set(e.object.name))}
       onPointerOver = {(e) => {
         e.stopPropagation(); 
-        if(e.object.name.includes("sub")){
-          state.items[e.object.name] = "#00FD68";  
-        }else {
-          state.items[e.object.name] = "#F4FF02";  
-        }
-        set(e.object.name);
+        if(e.object.name.includes("sub")){state.items[e.object.name] = "#F6653E";}
+        else {state.items[e.object.name] = "#F4FF02";}
+        set(e.object.name);        
       }}
       onPointerOut    = {(e) => {e.intersections.length=== 0 && set(null); state.items[e.object.name] = "#999999";}}
       onPointerDown   = {(e) => {e.stopPropagation(); state.current = e.object.name;}}
       onPointerMissed = {(e) => {state.current = null}}
+       
+      // onUpdate={(e) => { state_2.items = e.children;}}
+
+
       // onClick={(event) => setActive(!active)}
       // onPointerOver={(event) => setHover(true)}
       // onPointerOut={(event) => setHover(false)}
     >
-      <group rotation={[-Math.PI / 2, 0, 0]}>
-        <group rotation={[Math.PI / 2, 0, 0]}>
-          {/* main pipe screws */}
-  
-
-
-          {/* Big Pipe */}
           <mesh 
-            material-color={snap.items.big_pipe}
+            material-color={snap.items.main_pipe}
             // material={materials.DefaultMaterial} 
-            name="big_pipe"
             geometry={nodes.defaultMaterial002.geometry} 
+            name="main_pipe"
+            sub_count={4}
+            castShadow
           >
                   <meshToonMaterial  color={'#999999'} />
           </mesh>
+
           <mesh
-            material-color={snap.items.first_sub_pipe}
+            material-color={snap.items.sub_pipe_01}
             // material={materials.DefaultMaterial}
-            // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('red')})}
             geometry={nodes.defaultMaterial004.geometry}
             position={[-0.05, 0.04, 0]}
             scale={[0.23, 0.23, 1]}
-            name="first_sub_pipe"
+            name="sub_pipe_01"
           >
                 <meshToonMaterial color={'#999999'} />
-
           </mesh>
-          <mesh
-            material-color={snap.items.fourth_sub_pipe}
-            // material={materials.DefaultMaterial}
-            // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('blue')})}
-            geometry={nodes.defaultMaterial006.geometry}
-            position={[0.05, -0.04, 0]}
-            scale={[0.23, 0.23, 1]}
-            name="fourth_sub_pipe"
-          >
-                <meshToonMaterial color={'#999999'} />
 
-          </mesh>
           <mesh
-            material-color={snap.items.second_sub_pipe}
+            material-color={snap.items.sub_pipe_02}
             // material={materials.DefaultMaterial}
-            // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('yellow')})}
             geometry={nodes.defaultMaterial008.geometry}
             position={[0.05, 0.04, 0]}
             scale={[0.23, 0.23, 1]}
-            name="second_sub_pipe"
-
+            name="sub_pipe_02"
           >
                <meshToonMaterial color={'#999999'} />
           </mesh>
+
           <mesh
-            material-color={snap.items.third_sub_pipe}
+            material-color={snap.items.sub_pipe_03}
             // material={materials.DefaultMaterial}
             // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('green')})}
             geometry={nodes.defaultMaterial010.geometry}
             position={[-0.05, -0.04, 0]}
             scale={[0.23, 0.23, 1]}
-            name="third_sub_pipe"
-
+            name="sub_pipe_03"        
           >
                   <meshToonMaterial color={'#999999'} />
           </mesh>
-        </group>
-      </group>
+
+          <mesh
+            material-color={snap.items.sub_pipe_04}
+            // material={materials.DefaultMaterial}
+            geometry={nodes.defaultMaterial006.geometry}
+            position={[0.05, -0.04, 0]}
+            scale={[0.23, 0.23, 1]}
+            name="sub_pipe_04"
+            
+          >
+                <meshToonMaterial color={'#999999'} />
+
+          </mesh>
+
+       
+  
     </group>
+    <OrbitControls 
+          // minPolarAngle={Math.PI / 2} 
+          // maxPolarAngle={Math.PI / 2} 
+          enableZoom={true} 
+          enablePan={true} />
+    </>
   )
 }
 
@@ -173,11 +198,16 @@ function Picker(){
     const snap = useProxy(state);
     return (
       <div className="picker" style={{display: snap.current ? "block" : "none"}}>
-            {/* <HexColorPicker
-              color={snap.items[snap.current]}
-              onChange={(color) => (state.items[snap.current] = color)}
-            /> */}
+            {/* <HexColorPickercolor={snap.items[snap.current]} onChange={(color) => (state.items[snap.current] = color)}/> */}
             <h1>{snap.current}</h1>
+            <h2>{snap.current && !snap.current.includes("sub")? "Sub Duct: 4": null}</h2>
+            <h2>{snap.current == "sub_pipe_01" ? "Fiber Line: "+snap.sub_items.sub_pipe_01: null} </h2>
+            <h2>{snap.current == "sub_pipe_02" ? "Fiber Line: "+snap.sub_items.sub_pipe_02: null} </h2>
+            <h2>{snap.current == "sub_pipe_03" ? "Fiber Line: "+snap.sub_items.sub_pipe_03: null} </h2>
+            <h2>{snap.current == "sub_pipe_04" ? "Fiber Line: "+snap.sub_items.sub_pipe_04: null} </h2>
+
+
+
       </div>
     )
 }
@@ -187,19 +217,41 @@ function Picker(){
 const state = proxy({
   current: null,
   items: {
-    mat_01: "#999999",
-    main_front_screw: "#999999",
-    first_sub_screw: "#999999",
-    fourth_sub_screw: "#999999",
-    second_sub_screw: "#999999",
-    third_sub_screw: "#999999",
-    big_pipe: "#999999",
-    first_sub_pipe: "#999999",
-    fourth_sub_pipe: "#999999",
-    second_sub_pipe: "#999999",
-    third_sub_pipe: "#999999",
+    // mat_01: "#999999",
+    // main_front_screw: "#999999",
+    // first_sub_screw: "#999999",
+    // fourth_sub_screw: "#999999",
+    // second_sub_screw: "#999999",
+    // third_sub_screw: "#999999",
+    main_pipe: "#999999",
+    sub_pipe_01: "#999999",
+    sub_pipe_02: "#999999",
+    sub_pipe_04: "#999999",
+    sub_pipe_03: "#999999",
+  },
+  sub_items: {
+    sub_pipe_01: 40,
+    sub_pipe_02: 22,
+    sub_pipe_04: 14,
+    sub_pipe_03: 56,
   }
 })
+
+const state_2 = proxy({
+  current: null,
+  items: [],
+})
+
+
+function Camera(props) {
+  const ref = useRef()
+  const { setDefaultCamera } = useThree()
+  // Make the camera known to the system
+  useEffect(() => void setDefaultCamera(ref.current), [])
+  // Update it every frame
+  useFrame(() => ref.current.updateMatrixWorld())
+  return 
+}
 
 
 
@@ -215,23 +267,31 @@ export default function App() {
     return new THREE.CatmullRomCurve3(points)
   })
 
+
   return (
     
     <>  
         <Canvas        
-        pixelRatio={window.devicePixelRatio}
+         pixelRatio={window.devicePixelRatio}
          className="container"
          concurrent
-         camera={{ position: [0, 0, 1.25], }}
+         shadowMap
          >
-        <ambientLight intensity={0.3} />
-        <pointLight position={[20, 20, 20]} />
-          <spotLight intensity={0.3} angle={0.1} penumbra={1} position={[5, 25, 20]} />
+          {/* <Camera position={[0, 0, 2]} /> */}
+          <directionalLight intensity={0.5} castShadow shadow-mapSize-height={512} shadow-mapSize-width={512}/>
+          {/* <spotLight intensity={0.3} angle={0.1} penumbra={1} position={[5, 25, 20]} /> */}
+          {/* <fog attach="fog" args={["white", 0, 40]} /> */}
+          <ambientLight intensity={0.1} />
           <Suspense fallback={null}>
-                <Pipe/>
-            <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} />
+             <Pipe/>      
+            <Plane receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} args={[1000, 1000]}>
+                <meshStandardMaterial attach="material" color="white" />
+            </Plane>
+
+           {/* <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} /> */}
+
          </Suspense>
-         <OrbitControls minPolarAngle={Math.PI / 2} maxPolarAngle={Math.PI / 2} enableZoom={true} enablePan={false} />
+    
        </Canvas>
        <Picker/>
     </>
