@@ -131,7 +131,7 @@ function Pipe(props) {
         }
         set(e.object.name);        
       }}
-      onPointerOut    = {(e) => {e.intersections.length=== 0 && set(null); state.items[e.object.name] = "#999999";}}
+      onPointerOut    = {(e) => {e.intersections.length=== 0 && set(null); state.items[e.object.name] = "#999999"; state.current = null;}}
       // onPointerDown   = {(e) => {e.stopPropagation(); state.current = e.object.name;}}
       onPointerMissed = {(e) => {state.current = null}}
        
@@ -216,7 +216,7 @@ function Picker(){
     return (
       <div className="picker" /*style={{display: snap.current ? "block" : "none"}}*/ style={{display: "block"}}>
             {/* <HexColorPickercolor={snap.items[snap.current]} onChange={(color) => (state.items[snap.current] = color)}/> */}
-            <h1>{!snap.current ? "Main Duct Location: Kasetsart University" : null}</h1>
+            <h1>{!snap.current ? "Main Duct Location: Kasetsart University" : snap.current}</h1>
             <h2>{snap.current && !snap.current.includes("sub")? "Sub Duct: 4": null}</h2>
             <h2>{snap.current == "sub_pipe_01" ? "Fiber Line: "+snap.sub_items.sub_pipe_01: null} </h2>
             <h2>{snap.current == "sub_pipe_02" ? "Fiber Line: "+snap.sub_items.sub_pipe_02: null} </h2>
