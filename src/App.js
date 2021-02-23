@@ -1,13 +1,14 @@
 import React, { Suspense, useRef, useState, useEffect, } from "react"
 import { Canvas, useFrame, useThree,  } from "react-three-fiber"
-import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, OrthographicCamera } from "drei"
+import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, } from "drei"
 import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
 import * as THREE from "three"
 import { Vector3 } from "three"
 // Using a Valtio state model to bridge reactivity between
 // the canvas and the dom, both can write to it and/or react to it.
-
+const dummy = new THREE.Vector3()
+const lookAtPos = new THREE.Vector3()
 
 function Shoe() {
   const ref = useRef()
@@ -78,12 +79,13 @@ function Model() {
 
 function Pipe(props) {
   // ---------------- Camera Section ------------ //
-  const camRef = useRef()
-  const { setDefaultCamera } = useThree()
-  // Make the camera known to the system
-  useEffect(() => void setDefaultCamera(camRef.current), [])
-  // Update it every frame
-  useFrame(() => camRef.current.updateMatrixWorld())
+  // const camRef = useRef()
+  const [zoom, setZoom] = useState(false)
+  // const { setDefaultCamera } = useThree()
+  // // Make the camera known to the system
+  // useEffect(() => void setDefaultCamera(camRef.current), [])
+  // // Update it every frame
+  // useFrame(() => camRef.current.updateMatrixWorld())
   // ------------------------------------------- //
 
 
@@ -94,19 +96,29 @@ function Pipe(props) {
   const [hover, set] = useState(null)
   const [hovered, setHover] = useState(false)
 
-  // function getDataFromMesh(){
-  //   for (let i = 0; i < group.current)
-  // }
+  useFrame((state, delta) => {
+    const step = 0.1
+    state.camera.fov = THREE.MathUtils.lerp(state.camera.fov, zoom ? 40 : 20, step)
+    state.camera.position.lerp(dummy.set(
+      zoom ? 1 : 3, 
+      zoom ? 0 : 2, 
+      zoom ? 2 : 2), 
+      step)
+
+    // lookAtPos.x = Math.sin(state.clock.getElapsedTime() * 2)
+
+    state.camera.lookAt(lookAtPos)
+    state.camera.updateProjectionMatrix()
+  })
 
 
   return (
     <>
-    <perspectiveCamera ref={camRef} position={[0,0,2]}   />
-    {/* {console.log( group.current ? group.current.children : null)} */}
-
+    {/* <perspectiveCamera ref={camRef} position={[0,0,0]}  zoom={1}  /> */}
 
     <group ref={group} {...props} dispose={null} position={[0,0,0]}
       // onPointerOver   = {(e) => (e.stopPropagation(), set(e.object.name))}
+      onClick={(e) =>   setZoom((zoom) => !zoom)}
       onPointerOver = {(e) => {
         e.stopPropagation(); 
         if(e.object.name.includes("sub")){
@@ -202,9 +214,9 @@ function Pipe(props) {
 function Picker(){
     const snap = useProxy(state);
     return (
-      <div className="picker" style={{display: snap.current ? "block" : "none"}}>
+      <div className="picker" /*style={{display: snap.current ? "block" : "none"}}*/ style={{display: "block"}}>
             {/* <HexColorPickercolor={snap.items[snap.current]} onChange={(color) => (state.items[snap.current] = color)}/> */}
-            <h1>{snap.current}</h1>
+            <h1>{!snap.current ? "Main Duct Location: Kasetsart University" : null}</h1>
             <h2>{snap.current && !snap.current.includes("sub")? "Sub Duct: 4": null}</h2>
             <h2>{snap.current == "sub_pipe_01" ? "Fiber Line: "+snap.sub_items.sub_pipe_01: null} </h2>
             <h2>{snap.current == "sub_pipe_02" ? "Fiber Line: "+snap.sub_items.sub_pipe_02: null} </h2>
@@ -286,7 +298,7 @@ export default function App() {
           <ambientLight intensity={0.1} />
           <Suspense fallback={null}>
              <Pipe/>      
-            <Plane receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} args={[1000, 1000]}>
+            <Plane receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} args={[5, 5]}>
                 <meshStandardMaterial attach="material" color="white" />
             </Plane>
 
