@@ -255,8 +255,9 @@ function Pipe(props) {
     <OrbitControls 
           // minPolarAngle={Math.PI / 2}            // min angle thingy
           // maxPolarAngle={Math.PI / 2}            // min angle thingy
-          enableZoom={true} 
-          enablePan={true} />
+          // enableZoom={true} 
+          enablePan={true} 
+    />
     </>
   )
 }
