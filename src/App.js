@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useState, useEffect, } from "react"
 import { Canvas, useFrame, useThree,  } from "react-three-fiber"
-import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, } from "drei"
+import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, Circle } from "drei"
 import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
 import * as THREE from "three"
@@ -9,6 +9,7 @@ import { Vector3 } from "three"
 // the canvas and the dom, both can write to it and/or react to it.
 const dummy = new THREE.Vector3()
 const lookAtPos = new THREE.Vector3()
+const FocusVector3 = new THREE.Vector3()
 
 function Shoe() {
   const ref = useRef()
@@ -80,32 +81,41 @@ function Model() {
 function Pipe(props) {
   // ---------------- Camera Section ------------ //
   // const camRef = useRef()
-  const [zoom, setZoom] = useState(false)
   // const { setDefaultCamera } = useThree()
   // // Make the camera known to the system
   // useEffect(() => void setDefaultCamera(camRef.current), [])
   // // Update it every frame
   // useFrame(() => camRef.current.updateMatrixWorld())
   // ------------------------------------------- //
+  const [zoom, setZoom] = useState(false)
+
 
 
   const group = useRef();
   const snap = useProxy(state);
   // const snap = useProxy(state_2);
   const { nodes, materials } = useGLTF('pipes_within_pipe.glb');
-  const [hover, set] = useState(null)
-  const [hovered, setHover] = useState(false)
+  const [hover,   set]      = useState(null)
+  // const [hovered, setHover] = useState(false)
+
+  const points = []
+  points.push(new THREE.Vector3(-10, 0, 0))
+  points.push(new THREE.Vector3(0, 10, 0))
+  points.push(new THREE.Vector3(10, 0, 0))
+
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
 
   useFrame((state, delta) => {
-    const step = 0.1
+    const step = 0.08
     state.camera.fov = THREE.MathUtils.lerp(state.camera.fov, zoom ? 40 : 20, step)
-    state.camera.position.lerp(dummy.set(
-      zoom ? 1 : 3, 
-      zoom ? 0 : 2, 
-      zoom ? 2 : 2), 
-      step)
+    state.camera.position.lerp(dummy.set( 
+      zoom ? FocusVector3.x : 3,          //    x-axis of camera position
+      zoom ? FocusVector3.y : 1.5,        //    y-axis of camera position
+      zoom ? 1.35 : 3),                   //    z-axis of camera position
+      step                                //    time that camera lerp
+      )             
 
-    // lookAtPos.x = Math.sin(state.clock.getElapsedTime() * 2)
+    // lookAtPos.x = Math.sin(state.clock.getElapsedTime() * 2)       // camera sway?? dizzy as heck
 
     state.camera.lookAt(lookAtPos)
     state.camera.updateProjectionMatrix()
@@ -118,110 +128,166 @@ function Pipe(props) {
 
     <group ref={group} {...props} dispose={null} position={[0,0,0]}
       // onPointerOver   = {(e) => (e.stopPropagation(), set(e.object.name))}
-      onClick={(e) =>   setZoom((zoom) => !zoom)}
-      onPointerOver = {(e) => {
+      // onPointerOver = {(e) => {    
+      //   e.stopPropagation(); 
+      //   if(e.object.name.includes("sub")){
+      //     state.current = e.object.name;
+      //     state.items[e.object.name] = "#F6653E";
+      //   }
+      //   else {
+      //     state.current = e.object.name;
+      //     state.items[e.object.name] = "#F4FF02";
+      //   }
+      // }}
+      onPointerOut  = {(e) => {
+          e.intersections.length=== 0 && set(null); 
+          // state.items[e.object.name] = "#999999"; 
+          // state.current = null;
+      }}
+      onPointerDown   = {(e) => {
         e.stopPropagation(); 
+        // change colour on the model
         if(e.object.name.includes("sub")){
+          state.items[state.current] = "#999999"
           state.current = e.object.name;
           state.items[e.object.name] = "#F6653E";
+          model_info.current = {
+            name:             e.object.name,
+            is_main_duct:     e.object.is_main_duct,          
+            sub_duct_count:   e.object.sub_duct_count,
+            sub_fiber_count:  e.object.sub_fiber_count,
+          }
         }
-        else {
+        else if (e.object.name.includes("main")) {
+          state.items[state.current] = "#999999"
           state.current = e.object.name;
           state.items[e.object.name] = "#F4FF02";
+          model_info.current = {
+            name:             e.object.name,
+            is_main_duct:     e.object.is_main_duct,          
+            sub_duct_count:   e.object.sub_duct_count,
+            sub_fiber_count:  e.object.sub_fiber_count,
+          }
         }
-        set(e.object.name);        
+        FocusVector3.set(e.point.x, e.point.y, e.point.z );         // set vector from pointer position
+        setZoom((zoom) => true);                                    // start zoom
+        // state.current = e.object.name;
       }}
-      onPointerOut    = {(e) => {e.intersections.length=== 0 && set(null); state.items[e.object.name] = "#999999"; state.current = null;}}
-      // onPointerDown   = {(e) => {e.stopPropagation(); state.current = e.object.name;}}
-      onPointerMissed = {(e) => {state.current = null}}
-       
-      // onUpdate={(e) => { state_2.items = e.children;}}
-
-
-      // onClick={(event) => setActive(!active)}
-      // onPointerOver={(event) => setHover(true)}
-      // onPointerOut={(event) => setHover(false)}
+      onPointerMissed = {(e) => {
+        setZoom((zoom) => false);                 // if clicking a non model it will zoom out
+        state.items[state.current] = "#999999"    // reset color
+        state.current = null;                     // disable color
+        model_info.current = null;
+      }}
     >
           <mesh 
+            // material={materials.DefaultMaterial}
             material-color={snap.items.main_pipe}
-            // material={materials.DefaultMaterial} 
             geometry={nodes.defaultMaterial002.geometry} 
-            name="main_pipe"
-            sub_count={4}
             castShadow
+            
+            name="main_pipe"
+            is_main_duct={true}
+            sub_duct_count={4}
           >
                   <meshToonMaterial  color={'#999999'} />
           </mesh>
 
           <mesh
-            material-color={snap.items.sub_pipe_01}
             // material={materials.DefaultMaterial}
+            material-color={snap.items.sub_pipe_01}
             geometry={nodes.defaultMaterial004.geometry}
             position={[-0.05, 0.04, 0]}
             scale={[0.23, 0.23, 1]}
+
             name="sub_pipe_01"
+            is_main_duct={false}
+            sub_fiber_count={23}
           >
                 <meshToonMaterial color={'#999999'} />
           </mesh>
 
           <mesh
-            material-color={snap.items.sub_pipe_02}
             // material={materials.DefaultMaterial}
+            material-color={snap.items.sub_pipe_02}
             geometry={nodes.defaultMaterial008.geometry}
             position={[0.05, 0.04, 0]}
             scale={[0.23, 0.23, 1]}
+
             name="sub_pipe_02"
+            is_main_duct={false}
+            sub_fiber_count={15}
           >
                <meshToonMaterial color={'#999999'} />
           </mesh>
 
           <mesh
-            material-color={snap.items.sub_pipe_03}
             // material={materials.DefaultMaterial}
+            material-color={snap.items.sub_pipe_03}
             // material={new THREE.MeshBasicMaterial({ color: new THREE.Color('green')})}
             geometry={nodes.defaultMaterial010.geometry}
             position={[-0.05, -0.04, 0]}
             scale={[0.23, 0.23, 1]}
-            name="sub_pipe_03"        
+
+            name="sub_pipe_03" 
+            is_main_duct={false}       
+            sub_fiber_count={42}
           >
                   <meshToonMaterial color={'#999999'} />
           </mesh>
 
           <mesh
-            material-color={snap.items.sub_pipe_04}
             // material={materials.DefaultMaterial}
+            material-color={snap.items.sub_pipe_04}
             geometry={nodes.defaultMaterial006.geometry}
             position={[0.05, -0.04, 0]}
             scale={[0.23, 0.23, 1]}
+
             name="sub_pipe_04"
-            
+            is_main_duct={false}               
+            sub_fiber_count={25}
           >
                 <meshToonMaterial color={'#999999'} />
-          </mesh>
-
-       
+          </mesh>       
   
     </group>
+
     <OrbitControls 
-          // minPolarAngle={Math.PI / 2} 
-          // maxPolarAngle={Math.PI / 2} 
+          // minPolarAngle={Math.PI / 2}            // min angle thingy
+          // maxPolarAngle={Math.PI / 2}            // min angle thingy
           enableZoom={true} 
           enablePan={true} />
     </>
   )
 }
 
+
+function renderInfo(item){
+  if(item.current){
+    if(item.current.is_main_duct == true){
+      return  <>
+            <h2>Main-duct Name: {item.current.name}</h2>
+            <h2>Sub-duct count: {item.current.sub_duct_count}</h2>
+        </>
+      } else if (item.current.is_main_duct == false) {
+        return <>
+          <h2>Sub-duct name: {item.current.name}</h2>
+          <h2>Fiber line quantity: {item.current.sub_fiber_count}</h2>
+        </>
+    }
+  }
+}
+
+
+// render text
 function Picker(){
     const snap = useProxy(state);
     return (
-      <div className="picker" /*style={{display: snap.current ? "block" : "none"}}*/ style={{display: "block"}}>
+      <div className="picker" style={{display: "block"}}>
             {/* <HexColorPickercolor={snap.items[snap.current]} onChange={(color) => (state.items[snap.current] = color)}/> */}
-            <h1>{!snap.current ? "Main Duct Location: Kasetsart University" : snap.current}</h1>
-            <h2>{snap.current && !snap.current.includes("sub")? "Sub Duct: 4": null}</h2>
-            <h2>{snap.current == "sub_pipe_01" ? "Fiber Line: "+snap.sub_items.sub_pipe_01: null} </h2>
-            <h2>{snap.current == "sub_pipe_02" ? "Fiber Line: "+snap.sub_items.sub_pipe_02: null} </h2>
-            <h2>{snap.current == "sub_pipe_03" ? "Fiber Line: "+snap.sub_items.sub_pipe_03: null} </h2>
-            <h2>{snap.current == "sub_pipe_04" ? "Fiber Line: "+snap.sub_items.sub_pipe_04: null} </h2>
+            <h1>Location: {!model_info.title ? "Unknown" : model_info.title }</h1>
+            {renderInfo(model_info)}
+
       </div>
     )
 }
@@ -251,12 +317,13 @@ const state = proxy({
   }
 })
 
-const state_2 = proxy({
+const model_info = proxy({
   current: null,
-  items: [],
+  title: "Location: Main Duct Location: Kasetsart University"
 })
 
 
+// Separate Camera unsed
 function Camera(props) {
   const ref = useRef()
   const { setDefaultCamera } = useThree()
@@ -271,17 +338,6 @@ function Camera(props) {
 
 export default function App() {
 
-  const [curve] = useState(() => {
-    // Create an empty array to stores the points
-    let points = []
-    // Define points along Z axis
-    for (let i = 0; i < 50; i += 1)
-      points.push(new THREE.Vector3(1 - Math.random() * 2, 1 - Math.random() * 2, 10 * (i / 4)))
-      // points.push(new THREE.Vector3(1, 1, 1))
-    return new THREE.CatmullRomCurve3(points)
-  })
-
-
   return (
     
     <>  
@@ -291,19 +347,15 @@ export default function App() {
          concurrent
          shadowMap
          >
-          {/* <Camera position={[0, 0, 2]} /> */}
           <directionalLight intensity={0.5} castShadow shadow-mapSize-height={512} shadow-mapSize-width={512}/>
-          {/* <spotLight intensity={0.3} angle={0.1} penumbra={1} position={[5, 25, 20]} /> */}
+          <spotLight intensity={0.3} angle={0.1} penumbra={1} position={[5, 25, 20]} />
           {/* <fog attach="fog" args={["white", 0, 40]} /> */}
           <ambientLight intensity={0.1} />
           <Suspense fallback={null}>
              <Pipe/>      
-            <Plane receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} args={[5, 5]}>
+            <Circle receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} args={[1, 15]}>    //radius, polygon
                 <meshStandardMaterial attach="material" color="white" />
-            </Plane>
-
-           {/* <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} /> */}
-
+            </Circle>
          </Suspense>
     
        </Canvas>
@@ -313,6 +365,7 @@ export default function App() {
   )
 }
 
+           {/* <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} /> */}
 
 
     // <> 
