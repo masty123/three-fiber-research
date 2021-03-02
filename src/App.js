@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useState, useEffect, } from "react"
 import { Canvas, useFrame, useThree,  } from "react-three-fiber"
-import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, Circle } from "drei"
+import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, Circle, Sphere, Tube, MeshWobbleMaterial } from "drei"
 import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
 import * as THREE from "three"
@@ -339,6 +339,22 @@ function Camera(props) {
 
 export default function App() {
 
+  const [curve] = useState(() => {
+    // Create an empty array to stores the points
+    let points = [];
+    // Define points along Z axis
+    for (let i = 0; i < 30; i += 1)
+      points.push(
+        new THREE.Vector3(
+          0,
+          0 ,
+          -(i / 4)
+        )
+      );
+
+    return new THREE.CatmullRomCurve3(points);
+  });
+
   return (
     
     <>  
@@ -356,9 +372,31 @@ export default function App() {
              <Pipe/>      
             <Circle receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} args={[1, 15]}>    //radius, polygon
                 <meshStandardMaterial attach="material" color="white" />
-            </Circle>
+            </Circle> 
+
+            {/* generated tube (still research) */}
+            {/* <Tube
+               args={[
+                 curve,     // vector3 curve
+                 2,         // tubular segment
+                 0.5,       // radius
+                 10,        // polygon
+                 5,         // radius segment
+                 false
+                ]}
+                position={[0,0,1.75]}
+            >
+              <meshToonMaterial attach="material" color="lime" />       
+            </Tube>
+
+          <OrbitControls 
+            // minPolarAngle={Math.PI / 2}            // min angle thingy
+            // maxPolarAngle={Math.PI / 2}            // min angle thingy
+            // enableZoom={true} 
+            enablePan={true} 
+          /> */}
+
          </Suspense>
-    
        </Canvas>
        <Picker/>
     </>
@@ -367,7 +405,11 @@ export default function App() {
 }
 
            {/* <ContactShadows rotation-x={Math.PI / 2} position={[0, -1, 0]} opacity={1} width={1} height={1}  blur={1} far={1} /> */}
-
+                 {/* <MeshWobbleMaterial
+                attach="material"
+                factor={1} // Strength, 0 disables the effect (default=1)
+                speed={10} // Speed (default=1)
+              /> */}
 
     // <> 
     // <Canvas        
@@ -413,12 +455,7 @@ export default function App() {
 //           shadow-mapSize-height={512}
 //           shadow-mapSize-width={512}
 //         />
-     
-//      {/* <Cylinder/> */}
-//      <mesh>
-//             <tubeGeometry args={[curve, 2, 10, 50, true]}/>
-//             <meshStandardMaterial attach="material" color="green" /> 
-//      </mesh>
+
      
 //    <OrbitControls />
 // </Suspense>
