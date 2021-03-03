@@ -1,10 +1,9 @@
-import React, { Suspense, useRef, useState, useEffect, } from "react"
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react"
 import { Canvas, useFrame, useThree,  } from "react-three-fiber"
-import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, Circle, Sphere, Tube, MeshWobbleMaterial } from "drei"
+import { ContactShadows,  useGLTF, OrbitControls, useAnimations, Plane, Circle, Sphere, Tube, MeshWobbleMaterial, } from "drei"
 import { HexColorPicker } from "react-colorful"
 import { proxy, useProxy } from "valtio"
-import * as THREE from "three"
-import { Vector3 } from "three"
+import * as THREE from 'three'
 // Using a Valtio state model to bridge reactivity between
 // the canvas and the dom, both can write to it and/or react to it.
 const dummy = new THREE.Vector3()
@@ -294,7 +293,6 @@ function Picker(){
 }
 
 
-
 const state = proxy({
   current: null,
   items: {
@@ -335,9 +333,8 @@ function Camera(props) {
   return 
 }
 
-
-
 export default function App() {
+
 
   const [curve] = useState(() => {
     // Create an empty array to stores the points
@@ -352,12 +349,6 @@ export default function App() {
           -(i / 4)
         ),
       );}
-
-      //  points.push(new THREE.Vector3(0,0,-0.5));
-      //  points.push(new THREE.Vector3(0,0,-3.5));
-
-
-      
 
     return new THREE.CatmullRomCurve3(points);
   });
@@ -402,7 +393,6 @@ export default function App() {
             // enableZoom={true} 
             enablePan={true} 
           /> */}
-
          </Suspense>
        </Canvas>
        <Picker/>
