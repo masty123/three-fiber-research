@@ -320,7 +320,7 @@ const state = proxy({
 
 const model_info = proxy({
   current: null,
-  title: "Location: Main Duct Location: Kasetsart University"
+  title: "Kasetsart University"
 })
 
 
@@ -343,14 +343,21 @@ export default function App() {
     // Create an empty array to stores the points
     let points = [];
     // Define points along Z axis
-    for (let i = 0; i < 30; i += 1)
+
+    for (let i = 0; i < 30; i += 1){
       points.push(
         new THREE.Vector3(
           0,
           0 ,
           -(i / 4)
-        )
-      );
+        ),
+      );}
+
+      //  points.push(new THREE.Vector3(0,0,-0.5));
+      //  points.push(new THREE.Vector3(0,0,-3.5));
+
+
+      
 
     return new THREE.CatmullRomCurve3(points);
   });
@@ -382,7 +389,7 @@ export default function App() {
                  0.5,       // radius
                  10,        // polygon
                  5,         // radius segment
-                 false
+                 false      // closed tube??
                 ]}
                 position={[0,0,1.75]}
             >
@@ -391,7 +398,7 @@ export default function App() {
 
           <OrbitControls 
             // minPolarAngle={Math.PI / 2}            // min angle thingy
-            // maxPolarAngle={Math.PI / 2}            // min angle thingy
+            maxPolarAngle={Math.PI / 2}            // min angle thingy
             // enableZoom={true} 
             enablePan={true} 
           /> */}
