@@ -97,12 +97,12 @@ function Pipe(props) {
   const [hover,   set]      = useState(null)
   // const [hovered, setHover] = useState(false)
 
-  const points = []
-  points.push(new THREE.Vector3(-10, 0, 0))
-  points.push(new THREE.Vector3(0, 10, 0))
-  points.push(new THREE.Vector3(10, 0, 0))
+  // const points = []
+  // points.push(new THREE.Vector3(-10, 0, 0))
+  // points.push(new THREE.Vector3(0, 10, 0))
+  // points.push(new THREE.Vector3(10, 0, 0))
 
-  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
+  // const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
 
   useFrame((state, delta) => {
     const step = 0.08
